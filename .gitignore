@@ -1,0 +1,26 @@
+# Build artifacts
+node_modules/
+dist/
+.vite/
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Personal documents in this folder — not part of the website
+*.pdf
+*.mp4
+old/
+_upload_work/
+
+# Old portfolio prototypes superseded by the Vite project
+magic-portfolio.jsx
+standalone-portfolio.html
+server.cjs
+
+# Local agent state
+.claude/
