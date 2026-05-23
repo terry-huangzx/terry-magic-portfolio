@@ -19,11 +19,14 @@ function MagicianSVG() {
         </radialGradient>
       </defs>
       <circle cx="100" cy="80" r="70" fill="url(#g2)" />
-      <rect x="56" y="74" width="88" height="12" fill="#0a1430" stroke="url(#g1)" strokeWidth="1.5" />
-      <ellipse cx="100" cy="80" rx="60" ry="8" fill="#0a1430" stroke="url(#g1)" strokeWidth="1.5" />
-      <rect x="62" y="20" width="76" height="60" fill="#0a1430" stroke="url(#g1)" strokeWidth="1.5" />
-      <line x1="68" y1="30" x2="68" y2="70" stroke="url(#g1)" strokeWidth=".6" opacity=".5" />
-      <path d="M100 38 L102 44 L108 44 L103 48 L105 54 L100 50 L95 54 L97 48 L92 44 L98 44 Z" fill="url(#g1)" />
+      {/* Hat group — animated on click via .magician-card.erupting .hat-group */}
+      <g className="hat-group" style={{ transformBox: 'fill-box', transformOrigin: '100px 80px' }}>
+        <rect x="56" y="74" width="88" height="12" fill="#0a1430" stroke="url(#g1)" strokeWidth="1.5" />
+        <ellipse cx="100" cy="80" rx="60" ry="8" fill="#0a1430" stroke="url(#g1)" strokeWidth="1.5" />
+        <rect x="62" y="20" width="76" height="60" fill="#0a1430" stroke="url(#g1)" strokeWidth="1.5" />
+        <line x1="68" y1="30" x2="68" y2="70" stroke="url(#g1)" strokeWidth=".6" opacity=".5" />
+        <path d="M100 38 L102 44 L108 44 L103 48 L105 54 L100 50 L95 54 L97 48 L92 44 L98 44 Z" fill="url(#g1)" />
+      </g>
       <line x1="40" y1="160" x2="160" y2="120" stroke="url(#g1)" strokeWidth="3" strokeLinecap="round" />
       <circle cx="40" cy="160" r="5" fill="url(#g1)" />
       <circle cx="160" cy="120" r="5" fill="#f4ecd8" />
@@ -175,7 +178,7 @@ function Chooser({ onActs, onTricks, onClose }) {
               <span className="cc-suit-big">♥</span>
               <span className="cc-name">The Tricks</span>
               <span className="cc-sub">What I've built</span>
-              <span className="cc-count">7 cards · projects</span>
+              <span className="cc-count">10 cards · projects</span>
               <span className="cc-key">press 2</span>
             </div>
           </button>
@@ -188,7 +191,7 @@ function Chooser({ onActs, onTricks, onClose }) {
   )
 }
 
-function Hero({ onActs, onTricks, onMagicianClick }) {
+function Hero({ onActs, onTricks, onMagicianClick, erupting }) {
   return (
     <header className="hero" id="hero">
       <div className="hero-grid">
@@ -257,18 +260,30 @@ function Hero({ onActs, onTricks, onMagicianClick }) {
           </div>
         </div>
 
-        <div className="hero-art" onClick={onMagicianClick} role="button" aria-label="Open the deck chooser">
+        <div className={`hero-art ${erupting ? 'is-erupting' : ''}`} onClick={onMagicianClick} role="button" aria-label="Open the deck chooser">
           <div className="card-orbits">
             <div className="orbit o1" />
             <div className="orbit o2" />
           </div>
-          <div className="magician-card">
+          <div className={`magician-card ${erupting ? 'erupting' : ''}`}>
             <span className="card-corner tl">T<small>♠</small></span>
             <span className="card-corner br">T<small>♠</small></span>
             <div className="card-art">
               <MagicianSVG />
             </div>
             <div className="card-label">— The Magician —</div>
+          </div>
+
+          {/* Two cards "spit out" of the hat when the magician is clicked.
+              They animate from the hat position up and outward, previewing
+              the two decks (Acts / Tricks) that the chooser is about to show. */}
+          <div className={`spit-card spit-acts ${erupting ? 'fly' : ''}`} aria-hidden="true">
+            <span className="spit-rank">A</span>
+            <span className="spit-suit">♠</span>
+          </div>
+          <div className={`spit-card spit-tricks ${erupting ? 'fly' : ''}`} aria-hidden="true">
+            <span className="spit-rank">A</span>
+            <span className="spit-suit">♥</span>
           </div>
 
           <div className="float-tag t1">
@@ -415,7 +430,7 @@ function Stage() {
           Statistical Science Specialist (Economy Focus) · Computer Science Major (AI Focus) · Economics Minor
         </p>
         <div className="bill-meta">
-          <span><b>2022–2027</b> Sep – Aug</span>
+          <span><b>2023–2028</b> Sep – Aug</span>
           <span><b>3.93</b> CGPA</span>
           <span><b>3×</b> Dean's List</span>
           <span><b>ASIP</b> Internship Program</span>
@@ -507,6 +522,7 @@ export default function App() {
   const actsRef = useRef(null)
   const tricksRef = useRef(null)
   const [chooserOpen, setChooserOpen] = useState(false)
+  const [erupting, setErupting] = useState(false)
 
   useReveal()
 
@@ -518,7 +534,18 @@ export default function App() {
     setChooserOpen(false)
     tricksRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
-  const openChooser = () => setChooserOpen(true)
+  // Magician click → trigger hat-erupt + card-spit animation, then open
+  // the chooser modal once the cards have flown out.
+  const openChooser = () => {
+    if (erupting || chooserOpen) return
+    setErupting(true)
+    setTimeout(() => {
+      setChooserOpen(true)
+      // small extra delay before resetting so the chooser's own fade-in
+      // overlaps with the erupting animation finishing.
+      setTimeout(() => setErupting(false), 250)
+    }, 620)
+  }
 
   return (
     <>
@@ -527,7 +554,7 @@ export default function App() {
       <Cursor />
       <Nav />
       <SideDock />
-      <Hero onActs={goActs} onTricks={goTricks} onMagicianClick={openChooser} />
+      <Hero onActs={goActs} onTricks={goTricks} onMagicianClick={openChooser} erupting={erupting} />
       <Deck
         ref={actsRef}
         id="acts"
@@ -556,9 +583,9 @@ export default function App() {
           </>
         }
         subtitle="A bigger spread — every project I've shipped, dealt across the table. Tap any card to flip it over."
-        helperText="7 cards on the felt. Pick one and the rest stay quiet."
+        helperText="10 cards on the felt. Pick one and the rest stay quiet."
         cards={projects}
-        fanConfig={{ step: 170, rotStep: 5, arc: 14 }}
+        fanConfig={{ step: 130, rotStep: 3.5, arc: 11 }}
         switchLabel="Back to the Acts"
         onSwitch={goActs}
       />

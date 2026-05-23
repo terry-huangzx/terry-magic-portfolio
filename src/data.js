@@ -227,6 +227,64 @@ export const projects = [
       'Designed for CV data labeling with export support.'
     ],
     link: 'https://github.com/terry-huangzx/event_recorder'
+  },
+  {
+    id: 'magic-portfolio',
+    type: 'proj',
+    suit: '7',
+    suitGlyph: '♦',
+    tag: 'React · Vite',
+    accent: '#f5d77a',
+    title: 'Magic Portfolio',
+    subtitle: 'The very site you are on',
+    summary:
+      'A magic-themed personal portfolio — fanned card decks, 3D flips, custom cursor, confetti on every reveal.',
+    details: [
+      'React 18 + Vite, hand-rolled CSS (no UI framework). Deployed on Vercel.',
+      'Two interactive playing-card decks (Acts + Tricks) with 3D flip, fan layout, and modal draw.',
+      'Custom-built blue cursor + spray-trail particle system on HTML5 Canvas.',
+      'Confetti engine with physics (gravity, drag, rotation, wobble) firing on every card reveal.',
+      'DPR-aware canvas re-calibration so visuals stay aligned across monitors and zoom levels.'
+    ],
+    link: 'https://github.com/terry-huangzx/terry-magic-portfolio'
+  },
+  {
+    id: 'douyin-filter',
+    type: 'proj',
+    suit: '6',
+    suitGlyph: '♠',
+    tag: 'Python · Flask',
+    accent: '#ed93b1',
+    title: 'Douyin Comment IP Filter',
+    subtitle: 'Geo-aware comment scraper',
+    summary:
+      'Fetches and analyzes Douyin (TikTok China) comments, with filtering by IP geolocation, keyword search, and CSV/JSON export.',
+    details: [
+      'Filters comments by geographic region with automatic highlighting of overseas IPs.',
+      'Pure-Python ABogus signature generation to bypass Douyin’s Web API signing requirements.',
+      'Dual modes: automatic scraping and manual JSON paste, both exporting to JSON/CSV.',
+      'Flask backend + gmssl / PyCryptodome for crypto operations.'
+    ],
+    link: 'https://github.com/terry-huangzx/douyin-comment-ip-filter'
+  },
+  {
+    id: 'invoice-dashboard',
+    type: 'proj',
+    suit: '5',
+    suitGlyph: '♥',
+    tag: 'Next.js · Postgres',
+    accent: '#9fe1cb',
+    title: 'Invoice Dashboard',
+    subtitle: 'Full-stack Next.js 15 app',
+    summary:
+      'A full-stack invoice management dashboard showcasing modern Next.js development practices.',
+    details: [
+      'Next.js 15 + React 19 + TypeScript + Tailwind, deployed on Vercel with Postgres.',
+      'Complete CRUD on invoices with server-side form validation.',
+      'Debounced search + URL-based pagination state.',
+      'NextAuth.js authentication with bcrypt-hashed passwords and secure sessions.'
+    ],
+    link: 'https://github.com/terry-huangzx/vercel-react-web'
   }
 ]
 

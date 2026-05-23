@@ -329,6 +329,93 @@ nav.scrolled::before { opacity: 1; }
   letter-spacing: .15em; text-transform: uppercase; opacity: .7;
 }
 
+/* ── Magician click → hat erupts → two cards fly out ───────────────── */
+
+/* Hat group inside the SVG — pivots/scales when the card is "erupting" */
+.hat-group {
+  transform-origin: 100px 80px;   /* pivot at hat base center */
+  transform-box: fill-box;
+  transition: none;
+}
+.magician-card.erupting .hat-group {
+  animation: hatErupt 700ms cubic-bezier(.34, 1.56, .64, 1) both;
+}
+@keyframes hatErupt {
+  0%   { transform: rotate(0)     scale(1); }
+  18%  { transform: rotate(-8deg) scale(1.18); }
+  40%  { transform: rotate(6deg)  scale(1.32); }
+  62%  { transform: rotate(-4deg) scale(1.24); }
+  100% { transform: rotate(0)     scale(1); }
+}
+
+/* A subtle glow pulse on the whole card so you feel the "burst" */
+.magician-card.erupting {
+  animation: cardBurst 700ms ease-out both;
+}
+@keyframes cardBurst {
+  0%   { box-shadow: 0 30px 80px rgba(0,0,0,.5), 0 0 0 1px rgba(245,215,122,.2),  inset 0 1px 0 rgba(255,255,255,.05); }
+  35%  { box-shadow: 0 30px 80px rgba(0,0,0,.5), 0 0 60px rgba(245,215,122,.55), inset 0 1px 0 rgba(255,255,255,.08); }
+  100% { box-shadow: 0 30px 80px rgba(0,0,0,.5), 0 0 0 1px rgba(245,215,122,.2),  inset 0 1px 0 rgba(255,255,255,.05); }
+}
+
+/* The two ejected cards — start tucked behind the hat, fly outward + up,
+   then fade. Positioned relative to .hero-art so they sit above the
+   magician card. */
+.spit-card {
+  position: absolute;
+  top: 22%;                       /* roughly the hat's vertical center on the card */
+  left: 50%;
+  width: 64px; height: 92px;
+  border-radius: 7px;
+  display: flex; flex-direction: column;
+  align-items: flex-start; justify-content: flex-start;
+  padding: 6px 8px;
+  font-family: 'Fraunces', serif; font-style: italic;
+  font-weight: 600; line-height: 1;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(.5);
+  z-index: 5;
+  box-shadow: 0 8px 22px rgba(0,0,0,.45);
+}
+.spit-card .spit-rank { font-size: 22px; letter-spacing: -.02em; }
+.spit-card .spit-suit { font-size: 13px; margin-top: 2px; font-style: normal; }
+
+/* Black card — represents Acts (♠) */
+.spit-acts {
+  background: linear-gradient(160deg, #0a0e1a, #02040a);
+  border: 1px solid rgba(245,215,122,.5);
+  color: var(--gold-soft);
+}
+/* White card — represents Tricks (♥) */
+.spit-tricks {
+  background: linear-gradient(160deg, #fff7e6, #e8dec4);
+  border: 1px solid rgba(192, 57, 43, .35);
+  color: #c0392b;
+}
+
+/* When parent is erupting, fire the trajectory animation */
+.spit-card.fly { animation-fill-mode: forwards; }
+.spit-acts.fly   { animation: spitLeft  720ms cubic-bezier(.22, 1, .36, 1) 80ms both; }
+.spit-tricks.fly { animation: spitRight 720ms cubic-bezier(.22, 1, .36, 1) 80ms both; }
+
+@keyframes spitLeft {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(.4)  rotate(0deg); }
+  18%  { opacity: 1; transform: translate(-50%, -120%) scale(1)    rotate(-8deg); }
+  55%  { opacity: 1; transform: translate(-180%, -220%) scale(1.1) rotate(-22deg); }
+  100% { opacity: 0; transform: translate(-260%, -300%) scale(.9)  rotate(-30deg); }
+}
+@keyframes spitRight {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(.4)  rotate(0deg); }
+  18%  { opacity: 1; transform: translate(-50%, -120%) scale(1)    rotate(8deg); }
+  55%  { opacity: 1; transform: translate(80%, -220%) scale(1.1)  rotate(22deg); }
+  100% { opacity: 0; transform: translate(160%, -300%) scale(.9)  rotate(30deg); }
+}
+
+/* Disable the floating animation on the magician card during eruption
+   so the keyframes don't compose oddly. */
+.magician-card.erupting { animation-name: cardBurst, none; }
+
 .float-tag {
   position: absolute;
   display: flex; align-items: center; gap: 8px;

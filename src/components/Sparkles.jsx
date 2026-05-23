@@ -15,8 +15,15 @@ export default function Sparkles() {
       dpr = window.devicePixelRatio || 1
       W = window.innerWidth
       H = window.innerHeight
+      // Internal pixel buffer — for crisp rendering on high-DPR screens
       canvas.width = W * dpr
       canvas.height = H * dpr
+      // CSS display size — MUST be set explicitly, otherwise the canvas
+      // intrinsic width (from the HTML width attribute set above) wins over
+      // `position:fixed; inset:0` and the canvas renders at W*dpr CSS pixels,
+      // making everything draw at the wrong x/y.
+      canvas.style.width = W + 'px'
+      canvas.style.height = H + 'px'
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       ambient.length = 0
       for (let i = 0; i < 90; i++) {
@@ -33,8 +40,8 @@ export default function Sparkles() {
     }
 
     const onMove = (e) => {
-      // Always emit at least one particle, sometimes 2-3 for a denser trail
-      const burst = Math.random() > 0.55 ? 3 : Math.random() > 0.25 ? 2 : 1
+      // Spray burst — many particles per move for a "jet" feel
+      const burst = 6 + Math.floor(Math.random() * 5)   // 6-10 particles
       for (let k = 0; k < burst; k++) {
         // Color mix: ~55% blue family, ~30% white, ~15% deep ink (black-leaning, with white halo)
         const roll = Math.random()
@@ -56,18 +63,21 @@ export default function Sparkles() {
           halo = '#ffffff'
           isInk = true
         }
+        // Radial spray — each particle jets outward from the cursor
+        // at a random angle, with slight upward bias for "fountain" feel.
+        const angle = Math.random() * Math.PI * 2
+        const speed = 0.8 + Math.random() * 2.6
         trail.push({
-          x: e.clientX + (Math.random() - 0.5) * 14,
-          y: e.clientY + (Math.random() - 0.5) * 14,
-          r: 1.6 + Math.random() * 2.6,
+          x: e.clientX,
+          y: e.clientY,
+          r: 1.4 + Math.random() * 3,
           life: 1,
-          vx: (Math.random() - 0.5) * 1.4,
-          vy: (Math.random() - 0.5) * 1.2 - 0.6,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 0.4,   // slight upward bias
           color,
           halo,
           isInk,
-          // Some particles render as little 4-pointed stars rather than dots
-          star: Math.random() > 0.7
+          star: Math.random() > 0.65
         })
       }
     }
@@ -100,10 +110,13 @@ export default function Sparkles() {
       })
       for (let i = trail.length - 1; i >= 0; i--) {
         const p = trail[i]
+        // Spray motion — particles jet outward then decelerate quickly,
+        // staying compact around the cursor's spawn position.
         p.x += p.vx
         p.y += p.vy
-        p.vy += 0.02 // slight gravity so they drift down
-        p.life -= 0.018
+        p.vx *= 0.82      // strong drag so particles stop quickly
+        p.vy *= 0.82
+        p.life -= 0.045
         if (p.life <= 0) {
           trail.splice(i, 1)
           continue

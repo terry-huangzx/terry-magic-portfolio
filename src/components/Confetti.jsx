@@ -102,8 +102,14 @@ export default function ConfettiLayer() {
       _dpr = window.devicePixelRatio || 1
       _W = window.innerWidth
       _H = window.innerHeight
+      // Internal pixel buffer
       canvas.width = _W * _dpr
       canvas.height = _H * _dpr
+      // CSS display size — without these the canvas intrinsic width wins
+      // over `position:fixed; inset:0` and confetti renders offset on
+      // high-DPR screens.
+      canvas.style.width = _W + 'px'
+      canvas.style.height = _H + 'px'
       _ctx.setTransform(_dpr, 0, 0, _dpr, 0, 0)
     }
     _resize = resize
